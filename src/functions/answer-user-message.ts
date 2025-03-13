@@ -26,7 +26,6 @@ export async function answerUserMessage({
     const filePath = resolve(staticDir, uniqueFileName)
     await writeFile(filePath, file)
     fileUrl = `${uniqueFileName}`
-    fileUrl = "4bf92d84-0180-4072-8d91-5add8dd072dd.png"
     console.log(
       `File saved at: ${filePath}, URL: ${fileUrl}, File size: ${file.length} bytes`
     )
