@@ -33,7 +33,7 @@ export const filesTool = tool({
 
     try {
       const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY })
-      const uploadDir = '../../static/uploads'
+      const uploadDir = '../../static'
       const fileUploadExt = fileName.split('.').pop()?.toLowerCase()
       if (!fileUploadExt) return JSON.stringify({ success: false, error: "Extensão do arquivo inválida"})
       // if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir)

@@ -26,11 +26,11 @@ app.register(fastifyCors)
 app.register(fastifyMultipart)
 
 // Check if static dir exists
-if (!fs.existsSync(path.join(__dirname, '../static/uploads'))) {
-  fs.mkdirSync(path.join(__dirname, '../static/uploads'))
+if (!fs.existsSync(path.join(__dirname, '../static'))) {
+  fs.mkdirSync(path.join(__dirname, '../static'))
 }
 app.register(fastifyStatic, {
-  root: path.join(__dirname, '../static/uploads'),
+  root: path.join(__dirname, '../static'),
   prefix: '/static',
   list: false,
 })
