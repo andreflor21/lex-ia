@@ -38,6 +38,7 @@ export const filesTool = tool({
     try {
       const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY })
       const uploadDir = 'static'
+      let threadId: string | undefined;
       const fileUploadExt = fileName.split('.').pop()?.toLowerCase()
       if (!fileUploadExt)
         return JSON.stringify({
@@ -54,9 +55,14 @@ export const filesTool = tool({
       if (['jpeg', 'jpg', 'png'].includes(fileUploadExt)) {
         const imageUrl = `https://lexaiapi.energiacom.vc/static/${fileName}`
         content.push({
+          type: "text",
+          text: message,
+        })
+        content.push({
           type: 'image_url',
           image_url: { url: imageUrl, detail: 'high' },
         })
+        threadId = await askOpenAI(openai, content);
       } else if (fileUploadExt === 'pdf') {
         console.log({ fileUploadExt })
         try {
@@ -70,15 +76,15 @@ export const filesTool = tool({
             type: 'text',
             text: message,
           })
+          threadId = await askOpenAI(openai, content, [
+            { file_id: fileUploadId, tools: [{ type: 'file_search' }] },
+          ])
         } catch (error) {
           console.log(error)
         }
       }
       console.log(content)
-      // Enviar a solicitação para a OpenAI
-      const threadId = await askOpenAI(openai, content, [
-        { file_id: fileUploadId, tools: [{ type: 'file_search' }] },
-      ])
+
 
       // Processar resposta
       if (threadId) {
@@ -124,7 +130,11 @@ async function getOpenAIResponse(client: OpenAI, threadId: string) {
   return new Promise((resolve, reject) => {
     const allMessages: Message[] = []
     client.beta.threads.runs
-      .stream(threadId, { assistant_id: env.OPENAI_ASSISTANT_ID })
+      .stream(threadId,{ assistant_id: env.OPENAI_ASSISTANT_ID, instructions: `Processa arquivos (PDFs ou imagens) e envia para a OpenAI para extração de informações.
+        Imagens são processadas via URL pública. PDFs são carregados e analisados.
+        Extrair os dados da fatura e caso não seja possivel extrair os dados do pdf, retornar os campos vazios.
+        Utilizar a seção "Para leituras/análises/processamento de faturas de energia utilizar sempre as instruções abaixo" como base de instruções
+        Não responda em JSON e sim em markdown e nunca traga na resposta \`\`\` `.trim()})
       .on('messageDone', msg => {
         return allMessages.push(msg)
       })
