@@ -1,4 +1,4 @@
-import { createReadStream } from 'node:fs'
+import { createReadStream, unlinkSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { tool } from 'ai'
 import OpenAI from 'openai'
@@ -6,6 +6,7 @@ import type {
   Message,
   MessageContentPartParam,
   MessageCreateParams,
+  TextContentBlock
 } from 'openai/resources/beta/threads'
 import { z } from 'zod'
 import { env } from '../env'
@@ -75,9 +76,10 @@ export const filesTool = tool({
       // Processar resposta
       if (threadId) {
         const messages = await getOpenAIResponse(openai, threadId)
+        unlinkSync(filePath)
         return JSON.stringify({ success: true, data: messages })
       }
-
+      unlinkSync(filePath)
       return JSON.stringify({ success: false, error: "Não foi possivel gerar a threadID" })
     } catch (error) {
       if (error instanceof Error)
@@ -113,7 +115,9 @@ async function getOpenAIResponse(client: OpenAI, threadId: string) {
     const allMessages: Message[] = []
     client.beta.threads.runs
       .stream(threadId, { assistant_id: env.OPENAI_ASSISTANT_ID })
-      .on('messageDone', msg => allMessages.push(msg))
+      .on('messageDone', msg => {
+        return allMessages.push(msg)
+      })
       .on('end', () => resolve(allMessages))
       .on('error', reject)
   })

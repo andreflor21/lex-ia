@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import { fastifyCors } from '@fastify/cors'
 import { fastifyMultipart } from '@fastify/multipart'
 import { fastifyStatic } from '@fastify/static'
-import { fastify } from 'fastify'
+import {fastify, FastifyHttpOptions, FastifyHttpsOptions} from 'fastify'
 import {
   serializerCompiler,
   validatorCompiler,
@@ -15,23 +15,43 @@ const httpsOptions = {
   key: env.HTTPS_KEY ? fs.readFileSync(env.HTTPS_KEY as string) : undefined,
   cert: env.HTTPS_CERT ? fs.readFileSync(env.HTTPS_CERT as string) : undefined,
 };
+console.log(httpsOptions)
+// // Check if static dir exists
+// if (!fs.existsSync(path.join(__dirname, '../logs'))) {
+//   fs.mkdirSync(path.join(__dirname, '../logs'))
+// }
 
-// Check if static dir exists
-if (!fs.existsSync(path.join(__dirname, '../logs/server.log'))) {
-  fs.mkdirSync(path.join(__dirname, '../logs/server.log'))
-}
-const app = fastify({
-  https: env.HTTPS_CERT && env.HTTPS_KEY ? httpsOptions : null,
+const fastifyOptions: {
   logger: {
-    level: 'info',
-    file: path.join(__dirname, '../logs/server.log'),
+    level: string;
+    file: string;
   },
+  https?: {
+    key: Buffer | undefined;
+    cert: Buffer | undefined;
+  }
+} = {
+  logger: {
+  level: 'info',
+      file: path.join(__dirname, '../logs/server.log'),
+  },
+}
+if(env.NODE_ENV === 'production')
+  fastifyOptions.https = httpsOptions;
+
+const app = fastify({
+  ...fastifyOptions,
 })
 
 app.setSerializerCompiler(serializerCompiler)
 app.setValidatorCompiler(validatorCompiler)
 app.register(fastifyCors)
-app.register(fastifyMultipart)
+app.register(fastifyMultipart, {
+  limits: {
+    fileSize: 1024 * 1024 * 10,
+    files: 1,
+  }
+})
 
 // Check if static dir exists
 if (!fs.existsSync(path.join(__dirname, '../static'))) {

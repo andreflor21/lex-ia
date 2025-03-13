@@ -26,7 +26,7 @@ export async function answerUserMessage({
     const filePath = resolve(staticDir, uniqueFileName)
     await writeFile(filePath, file)
     fileUrl = `${uniqueFileName}`
-    console.log(`File saved at: ${filePath}, URL: ${fileUrl}`)
+    console.log(`File saved at: ${filePath}, URL: ${fileUrl}, File size: ${file.length} bytes`)
   }
   const contextMessage = file
     ? `${message}\n\n Arquivo enviado: ${fileUrl}`
