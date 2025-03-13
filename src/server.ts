@@ -11,7 +11,10 @@ import {
 import { env } from './env'
 import { sendMessageRoute } from './routes/send-message-route'
 
-const app = fastify({})
+const app = fastify({
+  https: env.HTTPS_CERT ? { cert: env.HTTPS_CERT, key: env.HTTPS_KEY } : null,
+  logger: true,
+})
 
 app.setSerializerCompiler(serializerCompiler)
 app.setValidatorCompiler(validatorCompiler)
