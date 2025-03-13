@@ -56,7 +56,7 @@ if (!fs.existsSync(path.join(process.cwd(), 'static'))) {
   fs.mkdirSync(path.join(process.cwd(), 'static'))
 }
 app.register(fastifyStatic, {
-  root: path.join(process.cwd(), '../static'),
+  root: path.join(process.cwd(), 'static'),
   prefix: '/static',
   list: false,
 })
