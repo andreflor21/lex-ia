@@ -30,6 +30,6 @@
     }
   },
   "files": {
-    "ignore": ["node_modules", ".idea"]
+    "ignore": ["node_modules", ".idea", "dist", "static"]
   }
 }

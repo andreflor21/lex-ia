@@ -21,12 +21,14 @@ export async function answerUserMessage({
   let fileUrl: string | null = null
   if (file && fileType) {
     console.log('File received')
-    const staticDir = resolve(__dirname, '../../static')
+    const staticDir = resolve(process.cwd(), 'static')
     const uniqueFileName = `${randomUUID()}${fileType}`
     const filePath = resolve(staticDir, uniqueFileName)
     await writeFile(filePath, file)
     fileUrl = `${uniqueFileName}`
-    console.log(`File saved at: ${filePath}, URL: ${fileUrl}, File size: ${file.length} bytes`)
+    console.log(
+      `File saved at: ${filePath}, URL: ${fileUrl}, File size: ${file.length} bytes`
+    )
   }
   const contextMessage = file
     ? `${message}\n\n Arquivo enviado: ${fileUrl}`

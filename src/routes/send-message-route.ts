@@ -62,7 +62,9 @@ export const sendMessageRoute: FastifyPluginAsyncZod = async app => {
 
           return reply.status(201).send({ response })
         }
-        const { message } = z.object({message: z.string()}).parse(request.body)
+        const { message } = z
+          .object({ message: z.string() })
+          .parse(request.body)
         if (!message) {
           return reply.status(400).send({ error: 'Message is required.' })
         }
@@ -75,7 +77,7 @@ export const sendMessageRoute: FastifyPluginAsyncZod = async app => {
         if (error instanceof Error)
           return reply.status(400).send({ error: error.message })
 
-        return reply.status(400).send({ error: "Erro desconhecido" })
+        return reply.status(400).send({ error: 'Erro desconhecido' })
       }
     }
   )

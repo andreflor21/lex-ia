@@ -6,7 +6,7 @@ import type {
   Message,
   MessageContentPartParam,
   MessageCreateParams,
-  TextContentBlock
+  TextContentBlock,
 } from 'openai/resources/beta/threads'
 import { z } from 'zod'
 import { env } from '../env'
@@ -29,17 +29,24 @@ export const filesTool = tool({
     console.log('Recebido na tool files:', { fileName, message })
 
     if (!fileName) {
-      return JSON.stringify({ success: false, error: "O buffer do arquivo não foi enviado."})
+      return JSON.stringify({
+        success: false,
+        error: 'O buffer do arquivo não foi enviado.',
+      })
     }
 
     try {
       const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY })
-      const uploadDir = '../../static'
+      const uploadDir = 'static'
       const fileUploadExt = fileName.split('.').pop()?.toLowerCase()
-      if (!fileUploadExt) return JSON.stringify({ success: false, error: "Extensão do arquivo inválida"})
+      if (!fileUploadExt)
+        return JSON.stringify({
+          success: false,
+          error: 'Extensão do arquivo inválida',
+        })
       // if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir)
 
-      const filePath = resolve(__dirname, uploadDir, fileName)
+      const filePath = resolve(process.cwd(), uploadDir, fileName)
       console.log('Caminho do arquivo:', filePath)
       // const fileStream = createReadStream(filePath)
       const content: MessageContentPartParam[] = []
@@ -80,7 +87,10 @@ export const filesTool = tool({
         return JSON.stringify({ success: true, data: messages })
       }
       unlinkSync(filePath)
-      return JSON.stringify({ success: false, error: "Não foi possivel gerar a threadID" })
+      return JSON.stringify({
+        success: false,
+        error: 'Não foi possivel gerar a threadID',
+      })
     } catch (error) {
       if (error instanceof Error)
         return JSON.stringify({ success: false, error: error.message })

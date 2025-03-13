@@ -1,9 +1,9 @@
-import path from 'node:path'
 import fs from 'node:fs'
+import path from 'node:path'
 import { fastifyCors } from '@fastify/cors'
 import { fastifyMultipart } from '@fastify/multipart'
 import { fastifyStatic } from '@fastify/static'
-import {fastify, FastifyHttpOptions, FastifyHttpsOptions} from 'fastify'
+import { FastifyHttpOptions, FastifyHttpsOptions, fastify } from 'fastify'
 import {
   serializerCompiler,
   validatorCompiler,
@@ -14,8 +14,7 @@ import { sendMessageRoute } from './routes/send-message-route'
 const httpsOptions = {
   key: env.HTTPS_KEY ? fs.readFileSync(env.HTTPS_KEY as string) : undefined,
   cert: env.HTTPS_CERT ? fs.readFileSync(env.HTTPS_CERT as string) : undefined,
-};
-console.log(httpsOptions)
+}
 // // Check if static dir exists
 // if (!fs.existsSync(path.join(__dirname, '../logs'))) {
 //   fs.mkdirSync(path.join(__dirname, '../logs'))
@@ -23,21 +22,20 @@ console.log(httpsOptions)
 
 const fastifyOptions: {
   logger: {
-    level: string;
-    file: string;
-  },
+    level: string
+    file: string
+  }
   https?: {
-    key: Buffer | undefined;
-    cert: Buffer | undefined;
+    key: Buffer | undefined
+    cert: Buffer | undefined
   }
 } = {
   logger: {
-  level: 'info',
-      file: path.join(__dirname, '../logs/server.log'),
+    level: 'info',
+    file: path.join(process.cwd(), 'logs/server.log'),
   },
 }
-if(env.NODE_ENV === 'production')
-  fastifyOptions.https = httpsOptions;
+if (env.NODE_ENV === 'production') fastifyOptions.https = httpsOptions
 
 const app = fastify({
   ...fastifyOptions,
@@ -50,15 +48,15 @@ app.register(fastifyMultipart, {
   limits: {
     fileSize: 1024 * 1024 * 10,
     files: 1,
-  }
+  },
 })
 
 // Check if static dir exists
-if (!fs.existsSync(path.join(__dirname, '../static'))) {
-  fs.mkdirSync(path.join(__dirname, '../static'))
+if (!fs.existsSync(path.join(process.cwd(), 'static'))) {
+  fs.mkdirSync(path.join(process.cwd(), 'static'))
 }
 app.register(fastifyStatic, {
-  root: path.join(__dirname, '../static'),
+  root: path.join(process.cwd(), '../static'),
   prefix: '/static',
   list: false,
 })
