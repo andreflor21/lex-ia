@@ -1,0 +1,12 @@
+# Server
+PORT=3333
+# Database
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/lex"
+
+# URLs
+API_URL="http://localhost:3333"
+WEB_URL="http://localhost:3000"
+
+# AI
+OPENAI_API_KEY=""
+OPENAI_ASSISTANT_ID=""

@@ -1,4 +1,8 @@
+import path from 'node:path'
+import fs from 'node:fs'
 import { fastifyCors } from '@fastify/cors'
+import { fastifyMultipart } from '@fastify/multipart'
+import { fastifyStatic } from '@fastify/static'
 import { fastify } from 'fastify'
 import {
   jsonSchemaTransform,
@@ -13,6 +17,17 @@ const app = fastify({})
 app.setSerializerCompiler(serializerCompiler)
 app.setValidatorCompiler(validatorCompiler)
 app.register(fastifyCors)
+app.register(fastifyMultipart)
+
+// Check if static dir exists
+if (!fs.existsSync(path.join(__dirname, '../static/uploads'))) {
+  fs.mkdirSync(path.join(__dirname, '../static/uploads'))
+}
+app.register(fastifyStatic, {
+  root: path.join(__dirname, '../static/uploads'),
+  prefix: '/static',
+  list: false,
+})
 app.get('/', async (request, reply) => {
   return { hello: 'world' }
 })
