@@ -11,8 +11,12 @@ import {
 import { env } from './env'
 import { sendMessageRoute } from './routes/send-message-route'
 
+const httpsOptions = {
+  key: env.HTTPS_KEY ? fs.readFileSync(env.HTTPS_KEY as string) : undefined,
+  cert: env.HTTPS_CERT ? fs.readFileSync(env.HTTPS_CERT as string) : undefined,
+};
 const app = fastify({
-  https: env.HTTPS_CERT ? { cert: env.HTTPS_CERT, key: env.HTTPS_KEY } : null,
+  https: env.HTTPS_CERT && env.HTTPS_KEY ? httpsOptions : null,
   logger: true,
 })
 
