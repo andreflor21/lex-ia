@@ -15,9 +15,17 @@ const httpsOptions = {
   key: env.HTTPS_KEY ? fs.readFileSync(env.HTTPS_KEY as string) : undefined,
   cert: env.HTTPS_CERT ? fs.readFileSync(env.HTTPS_CERT as string) : undefined,
 };
+
+// Check if static dir exists
+if (!fs.existsSync(path.join(__dirname, '../logs/server.log'))) {
+  fs.mkdirSync(path.join(__dirname, '../logs/server.log'))
+}
 const app = fastify({
   https: env.HTTPS_CERT && env.HTTPS_KEY ? httpsOptions : null,
-  logger: true,
+  logger: {
+    level: 'info',
+    file: path.join(__dirname, '../logs/server.log'),
+  },
 })
 
 app.setSerializerCompiler(serializerCompiler)
