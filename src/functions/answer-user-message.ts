@@ -2,7 +2,6 @@ import { randomUUID } from 'node:crypto'
 import { writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { type CoreMessage, generateText } from 'ai'
-import { z } from 'zod'
 import { openai } from '../ai/openai'
 import { filesTool } from '../tools/files-tool'
 import { postgresTool } from '../tools/postgres-tool'
@@ -23,9 +22,7 @@ export async function answerUserMessage({
   if (file && fileType) {
     console.log('File received')
     const staticDir = resolve(__dirname, '../../static/uploads')
-    console.log('Static dir', staticDir)
     const uniqueFileName = `${randomUUID()}${fileType}`
-    // const uniqueFileName = `teste${fileType}`
     const filePath = resolve(staticDir, uniqueFileName)
     await writeFile(filePath, file)
     fileUrl = `${uniqueFileName}`

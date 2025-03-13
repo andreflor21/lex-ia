@@ -37,7 +37,6 @@ export const sendMessageRoute: FastifyPluginAsyncZod = async app => {
             } else if (part.type === 'file' && part.fieldname === 'file') {
               const allowedFileTypes = ['.png', '.jpg', '.jpeg', '.pdf']
               const fileExtension = extname(part.filename || '').toLowerCase()
-              const filename = part.filename
               if (!allowedFileTypes.includes(fileExtension)) {
                 return reply.status(400).send({
                   error: 'Invalid file type. Only PDF and images are allowed.',

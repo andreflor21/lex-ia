@@ -28,14 +28,14 @@ export const filesTool = tool({
     console.log('Recebido na tool files:', { fileName, message })
 
     if (!fileName) {
-      throw new Error('O buffer do arquivo não foi enviado.')
+      return JSON.stringify({ success: false, error: "O buffer do arquivo não foi enviado."})
     }
 
     try {
       const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY })
       const uploadDir = '../../static/uploads'
       const fileUploadExt = fileName.split('.').pop()?.toLowerCase()
-      if (!fileUploadExt) throw new Error('Extensão de arquivo inválida.')
+      if (!fileUploadExt) return JSON.stringify({ success: false, error: "Extensão do arquivo inválida"})
       // if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir)
 
       const filePath = resolve(__dirname, uploadDir, fileName)
@@ -77,7 +77,8 @@ export const filesTool = tool({
         const messages = await getOpenAIResponse(openai, threadId)
         return JSON.stringify({ success: true, data: messages })
       }
-      throw new Error('Não foi possivel gerar a threadID')
+
+      return JSON.stringify({ success: false, error: "Não foi possivel gerar a threadID" })
     } catch (error) {
       if (error instanceof Error)
         return JSON.stringify({ success: false, error: error.message })
@@ -91,8 +92,7 @@ export const filesTool = tool({
 async function askOpenAI(
   client: OpenAI,
   prompt: MessageContentPartParam[],
-  attachments: MessageCreateParams.Attachment[] | null = null,
-  fileUploadId: string | null = null
+  attachments: MessageCreateParams.Attachment[] | null = null
 ) {
   const messagePayload: MessageCreateParams = {
     role: 'user',

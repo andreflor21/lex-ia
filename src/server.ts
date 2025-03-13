@@ -5,7 +5,6 @@ import { fastifyMultipart } from '@fastify/multipart'
 import { fastifyStatic } from '@fastify/static'
 import { fastify } from 'fastify'
 import {
-  jsonSchemaTransform,
   serializerCompiler,
   validatorCompiler,
 } from 'fastify-type-provider-zod'
@@ -28,7 +27,7 @@ app.register(fastifyStatic, {
   prefix: '/static',
   list: false,
 })
-app.get('/', async (request, reply) => {
+app.get('/', async () => {
   return { hello: 'world' }
 })
 app.register(sendMessageRoute)
